@@ -3,6 +3,7 @@ import { Interiors } from "./Interiors.js";
 import { Paint } from "./Paints.js";
 import { Technologies } from "./Technologies.js";
 import { Orders } from "./orders.js";
+import { Types } from "./Types.js"
 import { createNewOrder } from "./database.js"
 import { getTempState } from "./database.js";
 
@@ -14,6 +15,7 @@ export const CarHTML = () => {
     <body>
 
         <article class="option-card-container">
+            <div class="option-card">${Types()}</div>
             <div class="option-card">${Paint()}</div>
             <div class="option-card">${Interiors()}</div>
             <div class="option-card">${Wheels()}</div>
@@ -37,7 +39,7 @@ document.addEventListener(
     (clickEvent) => {
         if (clickEvent.target.id === "orderButton") {
             let tempState = getTempState()
-            if (tempState.paintId > 0 && tempState.interiorId > 0 && tempState.techId > 0 && tempState.wheelId > 0) {
+            if (tempState.paintId > 0 && tempState.interiorId > 0 && tempState.techId > 0 && tempState.wheelId > 0 && tempState.typeId > 0) {
                 createNewOrder()
             } else {
                 window.alert("PLEASE SELECT AN OPTION FOR EACH CATEGORY")

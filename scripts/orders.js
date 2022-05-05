@@ -2,12 +2,14 @@ import { getOrders } from "./database.js";
 import { getPaint } from "./database.js";
 import { getInteriors } from "./database.js";
 import { getTech } from "./database.js";
+import { getTypes } from "./database.js"
 import { getWheels } from "./database.js";
 
 const paints = getPaint()
 const interiors = getInteriors()
 const tech = getTech()
 const wheels = getWheels()
+const types = getTypes()
 
 
 // use paintID in order to get matching paint object
@@ -57,9 +59,19 @@ const findWheelInfo = (order) => {
     return foundWheel
 }
 
+const findTypeInfo = (order) => {
+
+    const foundType = types.find(
+        (type) => {
+            return type.id === order.typeId
+        }
+    )
+    return foundType
+}
+
 // make function that builds out HTML string for total price
-const buildTotalPriceHTML = (paintPrice, interiorPrice, techPrice, wheelPrice) => {
-    const totalPrice = paintPrice + interiorPrice + techPrice + wheelPrice
+const buildTotalPriceHTML = (paintPrice, interiorPrice, techPrice, wheelPrice, typePriceFactor) => {
+    const totalPrice = (paintPrice + interiorPrice + techPrice + wheelPrice) * typePriceFactor
     const totalPriceString = totalPrice.toLocaleString("en-US", {
         style: "currency",
         currency: "USD"
@@ -73,8 +85,9 @@ const buildOrderHTML = (order) => {
     const foundInterior = findInteriorInfo(order)
     const foundTech = findTechInfo(order)
     const foundWheels = findWheelInfo(order)
-    const totalPriceHTML = buildTotalPriceHTML(foundPaint.price, foundInterior.price, foundTech.price, foundWheels.price)
-    return `<p class="customOrderText"><b>Order #${order.id} (placed on ${order.timestamp}):</b> ${foundPaint.color} car with ${foundWheels.optionName} wheels, ${foundInterior.type}, and the ${foundTech.package} for a total cost of ${totalPriceHTML}</p>`
+    const foundType = findTypeInfo(order)
+    const totalPriceHTML = buildTotalPriceHTML(foundPaint.price, foundInterior.price, foundTech.price, foundWheels.price, foundType.priceFactor)
+    return `<p class="customOrderText"><b>Order #${order.id} (placed on ${order.timestamp}):</b> ${foundPaint.color} ${foundType.name} with ${foundWheels.optionName} wheels, ${foundInterior.type}, and the ${foundTech.package} for a total cost of ${totalPriceHTML}</p>`
 }
 
 export const Orders = () => {
